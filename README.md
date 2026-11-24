@@ -46,4 +46,8 @@ seguridad por medio de una cortia óptica.
 ![Estado Rechazo](media/03_estado_rechazo.png)
 
 ### 4. Tabla de variables
-![Declaracion de variables](media/03_tabla_variables.png)
+![Declaracion de variables](media/03_tabla_variables.PNG)
+
+### 5. Diagrama 
+![Diagrama Grafcet](media/grafcet_sfc.png)
+

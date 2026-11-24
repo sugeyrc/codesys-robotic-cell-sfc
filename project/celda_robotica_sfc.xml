@@ -1,0 +1,547 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://www.plcopen.org/xml/tc6_0200">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 4" creationDateTime="2026-11-23T22:13:47.2040294" />
+  <contentHeader name="Celda_Robotica_SFC_Grafcet.project" modificationDateTime="2026-11-23T17:43:58.5986733">
+    <coordinateInfo>
+      <fbd>
+        <scaling x="1" y="1" />
+      </fbd>
+      <ld>
+        <scaling x="1" y="1" />
+      </ld>
+      <sfc>
+        <scaling x="1" y="1" />
+      </sfc>
+    </coordinateInfo>
+    <addData>
+      <data name="http://www.3s-software.com/plcopenxml/projectinformation" handleUnknown="implementation">
+        <ProjectInformation />
+      </data>
+    </addData>
+  </contentHeader>
+  <types>
+    <dataTypes />
+    <pous>
+      <pou name="PLC_PRG" pouType="program">
+        <interface>
+          <localVars>
+            <variable name="Btn_Iniciar">
+              <type>
+                <BOOL />
+              </type>
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml">Iniciador de ciclo</xhtml>
+              </documentation>
+            </variable>
+            <variable name="Sensor_Inspeccion">
+              <type>
+                <BOOL />
+              </type>
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml">Pulsador: Detecta pieza frente a camara</xhtml>
+              </documentation>
+            </variable>
+            <variable name="Pieza_OK">
+              <type>
+                <BOOL />
+              </type>
+              <initialValue>
+                <simpleValue value="TRUE" />
+              </initialValue>
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml">Interruptor de pieza buena, False=scrap</xhtml>
+              </documentation>
+            </variable>
+            <variable name="Robot_Listo">
+              <type>
+                <BOOL />
+              </type>
+              <initialValue>
+                <simpleValue value="TRUE" />
+              </initialValue>
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml">Simula que el robot no esta en falla</xhtml>
+              </documentation>
+            </variable>
+            <variable name="Zona_Robot_Libre">
+              <type>
+                <BOOL />
+              </type>
+              <initialValue>
+                <simpleValue value="TRUE" />
+              </initialValue>
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml">Interruptor: interlock anticolision</xhtml>
+              </documentation>
+            </variable>
+            <variable name="Ciclo_Robot_OK">
+              <type>
+                <BOOL />
+              </type>
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Robot avisa que ha dejado el robot en la tarima</xhtml>
+              </documentation>
+            </variable>
+            <variable name="Cortina_Seguridad_OK">
+              <type>
+                <BOOL />
+              </type>
+              <initialValue>
+                <simpleValue value="TRUE" />
+              </initialValue>
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml">False=interrumpida, true=nadie cruzo</xhtml>
+              </documentation>
+            </variable>
+            <variable name="Reset_Seguridad">
+              <type>
+                <BOOL />
+              </type>
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml">reset de seguridad despues de una falla</xhtml>
+              </documentation>
+            </variable>
+            <variable name="Falla_Seguridad">
+              <type>
+                <BOOL />
+              </type>
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml">Memoria de seguridad</xhtml>
+              </documentation>
+            </variable>
+            <variable name="Banda_Alimentacion">
+              <type>
+                <BOOL />
+              </type>
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml">Actuadores - Salidas al HMI</xhtml>
+              </documentation>
+            </variable>
+            <variable name="Piston_Rechazo">
+              <type>
+                <BOOL />
+              </type>
+            </variable>
+            <variable name="Orden_tomar_Pieza">
+              <type>
+                <BOOL />
+              </type>
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml">Señal captada por el robot para iniciar proceso</xhtml>
+              </documentation>
+            </variable>
+            <variable name="Luz_Alarma_Seguridad">
+              <type>
+                <BOOL />
+              </type>
+            </variable>
+            <variable name="Sensor_Ispeccion">
+              <type>
+                <BOOL />
+              </type>
+            </variable>
+          </localVars>
+          <addData>
+            <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+              <Attributes>
+                <Attribute Name="do_checks_for_implicit_code" Value="" />
+              </Attributes>
+            </data>
+          </addData>
+        </interface>
+        <actions>
+          <action name="Alimentar_entry">
+            <body>
+              <ST>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml">Banda_Alimentacion := TRUE;
+//Limpia la falla si la cortina ests libre y se pulsa recet
+IF Reset_Seguridad AND Cortina_Seguridad_OK THEN
+	Falla_Seguridad := FALSE;
+END_IF;
+//Si se interrumpe cortina estando en reposo se bloque el arranque
+IF NOT Cortina_Seguridad_OK THEN
+	Falla_Seguridad := TRUE;
+END_IF;
+Luz_Alarma_Seguridad := Falla_Seguridad;</xhtml>
+              </ST>
+            </body>
+            <addData>
+              <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                <ObjectId>9736dfde-6426-49a0-99cc-2f97b17aca29</ObjectId>
+              </data>
+            </addData>
+          </action>
+          <action name="Alimentar_exit">
+            <body>
+              <ST>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml">Banda_Alimentacion := FALSE;</xhtml>
+              </ST>
+            </body>
+            <addData>
+              <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                <ObjectId>4cfaff57-5fe0-4db6-956a-79588b3823b7</ObjectId>
+              </data>
+            </addData>
+          </action>
+          <action name="Paletizar_entry">
+            <body>
+              <ST>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml">
+Orden_Tomar_Pieza := TRUE;
+</xhtml>
+              </ST>
+            </body>
+            <addData>
+              <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                <ObjectId>5aefb77d-b9aa-4b7d-ad1c-e5e414785ed0</ObjectId>
+              </data>
+            </addData>
+          </action>
+          <action name="Paletizar_exit">
+            <body>
+              <ST>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml">Orden_Tomar_Pieza := FALSE;</xhtml>
+              </ST>
+            </body>
+            <addData>
+              <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                <ObjectId>4191171d-936e-46cc-baa7-4efc017a350d</ObjectId>
+              </data>
+            </addData>
+          </action>
+          <action name="Rechazar_entry">
+            <body>
+              <ST>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml">Piston_Rechazo := TRUE;</xhtml>
+              </ST>
+            </body>
+            <addData>
+              <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                <ObjectId>951ef142-dd62-4272-9157-ce88ee04d60c</ObjectId>
+              </data>
+            </addData>
+          </action>
+          <action name="Rechazar_exit">
+            <body>
+              <ST>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml">Piston_Rechazo := FALSE;</xhtml>
+              </ST>
+            </body>
+            <addData>
+              <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                <ObjectId>24af3387-f9f7-408b-ba59-20db7b833434</ObjectId>
+              </data>
+            </addData>
+          </action>
+        </actions>
+        <body>
+          <SFC>
+            <step localId="0" initialStep="true" name="Init">
+              <position x="0" y="0" />
+              <connectionPointIn />
+              <connectionPointOut formalParameter="sfc" />
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/sfc/element" handleUnknown="implementation">
+                  <attributes xmlns="">
+                    <attribute guid="38391c6d-6d4a-42f8-8ee7-9f45e5adafa8">Init</attribute>
+                    <attribute guid="01580b27-6378-448b-8ecb-0e4b795b58d6">FALSE</attribute>
+                    <attribute guid="bc882c11-1e91-4dd8-a6b8-2075724ed18b">0</attribute>
+                    <attribute guid="6844a48e-46c2-4cc8-a185-a478f3b99cc0">TRUE</attribute>
+                    <attribute guid="62e1754b-7629-4e63-9cec-10ae0c536f1f">FALSE</attribute>
+                  </attributes>
+                </data>
+              </addData>
+            </step>
+            <inVariable localId="1">
+              <position x="0" y="0" />
+              <connectionPointOut />
+              <expression>Btn_Iniciar AND Cortina_Seguridad_OK AND NOT Falla_Seguridad</expression>
+            </inVariable>
+            <transition localId="2">
+              <position x="0" y="0" />
+              <connectionPointIn>
+                <connection refLocalId="0" formalParameter="sfc" />
+              </connectionPointIn>
+              <condition>
+                <connectionPointIn>
+                  <connection refLocalId="1" />
+                </connectionPointIn>
+              </condition>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/sfc/element" handleUnknown="implementation">
+                  <attributes xmlns="">
+                    <attribute guid="38391c6d-6d4a-42f8-8ee7-9f45e5adafa8">Btn_Iniciar AND Cortina_Seguridad_OK AND NOT Falla_Seguridad</attribute>
+                    <attribute guid="01580b27-6378-448b-8ecb-0e4b795b58d6">FALSE</attribute>
+                    <attribute guid="bc882c11-1e91-4dd8-a6b8-2075724ed18b">0</attribute>
+                    <attribute guid="62e1754b-7629-4e63-9cec-10ae0c536f1f">FALSE</attribute>
+                    <attribute guid="8294df19-5962-4dee-a874-1051dabb0e3e">0</attribute>
+                  </attributes>
+                </data>
+              </addData>
+            </transition>
+            <step localId="3" name="Alimentar">
+              <position x="0" y="0" />
+              <connectionPointIn>
+                <connection refLocalId="2" />
+              </connectionPointIn>
+              <connectionPointOut formalParameter="sfc" />
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/sfc/element" handleUnknown="implementation">
+                  <attributes xmlns="">
+                    <attribute guid="38391c6d-6d4a-42f8-8ee7-9f45e5adafa8">Alimentar</attribute>
+                    <attribute guid="01580b27-6378-448b-8ecb-0e4b795b58d6">FALSE</attribute>
+                    <attribute guid="bc882c11-1e91-4dd8-a6b8-2075724ed18b">0</attribute>
+                    <attribute guid="6844a48e-46c2-4cc8-a185-a478f3b99cc0">FALSE</attribute>
+                    <attribute guid="62e1754b-7629-4e63-9cec-10ae0c536f1f">FALSE</attribute>
+                    <attribute guid="a6b08bd8-b696-47e3-9cbf-7408b61c9ff8">Alimentar_entry</attribute>
+                    <attribute guid="a2621e18-7de3-4ea6-ae6d-89e9e0b7befd">Alimentar_exit</attribute>
+                  </attributes>
+                </data>
+              </addData>
+            </step>
+            <selectionDivergence localId="4">
+              <position x="0" y="0" />
+              <connectionPointIn>
+                <connection refLocalId="3" />
+              </connectionPointIn>
+              <connectionPointOut formalParameter="sfc" />
+              <connectionPointOut formalParameter="sfc" />
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/sfc/element" handleUnknown="implementation">
+                  <attributes xmlns="">
+                    <attribute guid="38391c6d-6d4a-42f8-8ee7-9f45e5adafa8">Branch0</attribute>
+                    <attribute guid="01580b27-6378-448b-8ecb-0e4b795b58d6">FALSE</attribute>
+                    <attribute guid="23bdaa98-72ec-41f7-817b-9dede5697086">FALSE</attribute>
+                  </attributes>
+                </data>
+              </addData>
+            </selectionDivergence>
+            <inVariable localId="5">
+              <position x="0" y="0" />
+              <connectionPointOut />
+              <expression>Sensor_Inspeccion AND Pieza_OK AND Robot_Listo AND Zona_Robot_Libre</expression>
+            </inVariable>
+            <transition localId="6">
+              <position x="0" y="0" />
+              <connectionPointIn>
+                <connection refLocalId="4" formalParameter="sfc" />
+              </connectionPointIn>
+              <condition>
+                <connectionPointIn>
+                  <connection refLocalId="5" />
+                </connectionPointIn>
+              </condition>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/sfc/element" handleUnknown="implementation">
+                  <attributes xmlns="">
+                    <attribute guid="38391c6d-6d4a-42f8-8ee7-9f45e5adafa8">Sensor_Inspeccion AND Pieza_OK AND Robot_Listo AND Zona_Robot_Libre</attribute>
+                    <attribute guid="01580b27-6378-448b-8ecb-0e4b795b58d6">FALSE</attribute>
+                    <attribute guid="bc882c11-1e91-4dd8-a6b8-2075724ed18b">0</attribute>
+                    <attribute guid="62e1754b-7629-4e63-9cec-10ae0c536f1f">FALSE</attribute>
+                    <attribute guid="8294df19-5962-4dee-a874-1051dabb0e3e">0</attribute>
+                  </attributes>
+                </data>
+              </addData>
+            </transition>
+            <step localId="7" name="Paletizar">
+              <position x="0" y="0" />
+              <connectionPointIn>
+                <connection refLocalId="6" />
+              </connectionPointIn>
+              <connectionPointOut formalParameter="sfc" />
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/sfc/element" handleUnknown="implementation">
+                  <attributes xmlns="">
+                    <attribute guid="38391c6d-6d4a-42f8-8ee7-9f45e5adafa8">Paletizar</attribute>
+                    <attribute guid="01580b27-6378-448b-8ecb-0e4b795b58d6">FALSE</attribute>
+                    <attribute guid="bc882c11-1e91-4dd8-a6b8-2075724ed18b">0</attribute>
+                    <attribute guid="6844a48e-46c2-4cc8-a185-a478f3b99cc0">FALSE</attribute>
+                    <attribute guid="62e1754b-7629-4e63-9cec-10ae0c536f1f">FALSE</attribute>
+                    <attribute guid="a6b08bd8-b696-47e3-9cbf-7408b61c9ff8">Paletizar_entry</attribute>
+                    <attribute guid="a2621e18-7de3-4ea6-ae6d-89e9e0b7befd">Paletizar_exit</attribute>
+                  </attributes>
+                </data>
+              </addData>
+            </step>
+            <inVariable localId="8">
+              <position x="0" y="0" />
+              <connectionPointOut />
+              <expression>Ciclo_Robot_OK</expression>
+            </inVariable>
+            <transition localId="9">
+              <position x="0" y="0" />
+              <connectionPointIn>
+                <connection refLocalId="7" formalParameter="sfc" />
+              </connectionPointIn>
+              <condition>
+                <connectionPointIn>
+                  <connection refLocalId="8" />
+                </connectionPointIn>
+              </condition>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/sfc/element" handleUnknown="implementation">
+                  <attributes xmlns="">
+                    <attribute guid="38391c6d-6d4a-42f8-8ee7-9f45e5adafa8">Ciclo_Robot_OK</attribute>
+                    <attribute guid="01580b27-6378-448b-8ecb-0e4b795b58d6">FALSE</attribute>
+                    <attribute guid="bc882c11-1e91-4dd8-a6b8-2075724ed18b">0</attribute>
+                    <attribute guid="62e1754b-7629-4e63-9cec-10ae0c536f1f">FALSE</attribute>
+                    <attribute guid="8294df19-5962-4dee-a874-1051dabb0e3e">0</attribute>
+                  </attributes>
+                </data>
+              </addData>
+            </transition>
+            <inVariable localId="10">
+              <position x="0" y="0" />
+              <connectionPointOut />
+              <expression>Sensor_Inspeccion AND NOT Pieza_OK</expression>
+            </inVariable>
+            <transition localId="11">
+              <position x="0" y="0" />
+              <connectionPointIn>
+                <connection refLocalId="4" formalParameter="sfc" />
+              </connectionPointIn>
+              <condition>
+                <connectionPointIn>
+                  <connection refLocalId="10" />
+                </connectionPointIn>
+              </condition>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/sfc/element" handleUnknown="implementation">
+                  <attributes xmlns="">
+                    <attribute guid="38391c6d-6d4a-42f8-8ee7-9f45e5adafa8">Sensor_Inspeccion AND NOT Pieza_OK</attribute>
+                    <attribute guid="01580b27-6378-448b-8ecb-0e4b795b58d6">FALSE</attribute>
+                    <attribute guid="bc882c11-1e91-4dd8-a6b8-2075724ed18b">0</attribute>
+                    <attribute guid="62e1754b-7629-4e63-9cec-10ae0c536f1f">FALSE</attribute>
+                    <attribute guid="8294df19-5962-4dee-a874-1051dabb0e3e">0</attribute>
+                  </attributes>
+                </data>
+              </addData>
+            </transition>
+            <step localId="12" name="Rechazar">
+              <position x="0" y="0" />
+              <connectionPointIn>
+                <connection refLocalId="11" />
+              </connectionPointIn>
+              <connectionPointOut formalParameter="sfc" />
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/sfc/element" handleUnknown="implementation">
+                  <attributes xmlns="">
+                    <attribute guid="38391c6d-6d4a-42f8-8ee7-9f45e5adafa8">Rechazar</attribute>
+                    <attribute guid="01580b27-6378-448b-8ecb-0e4b795b58d6">FALSE</attribute>
+                    <attribute guid="bc882c11-1e91-4dd8-a6b8-2075724ed18b">0</attribute>
+                    <attribute guid="6844a48e-46c2-4cc8-a185-a478f3b99cc0">FALSE</attribute>
+                    <attribute guid="62e1754b-7629-4e63-9cec-10ae0c536f1f">FALSE</attribute>
+                    <attribute guid="a6b08bd8-b696-47e3-9cbf-7408b61c9ff8">Rechazar_entry</attribute>
+                    <attribute guid="a2621e18-7de3-4ea6-ae6d-89e9e0b7befd">Rechazar_exit</attribute>
+                  </attributes>
+                </data>
+              </addData>
+            </step>
+            <inVariable localId="13">
+              <position x="0" y="0" />
+              <connectionPointOut />
+              <expression>Rechazar.t &gt;= T#2s</expression>
+            </inVariable>
+            <transition localId="14">
+              <position x="0" y="0" />
+              <connectionPointIn>
+                <connection refLocalId="12" formalParameter="sfc" />
+              </connectionPointIn>
+              <condition>
+                <connectionPointIn>
+                  <connection refLocalId="13" />
+                </connectionPointIn>
+              </condition>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/sfc/element" handleUnknown="implementation">
+                  <attributes xmlns="">
+                    <attribute guid="38391c6d-6d4a-42f8-8ee7-9f45e5adafa8">Rechazar.t &gt;= T#2s</attribute>
+                    <attribute guid="01580b27-6378-448b-8ecb-0e4b795b58d6">FALSE</attribute>
+                    <attribute guid="bc882c11-1e91-4dd8-a6b8-2075724ed18b">0</attribute>
+                    <attribute guid="62e1754b-7629-4e63-9cec-10ae0c536f1f">FALSE</attribute>
+                    <attribute guid="8294df19-5962-4dee-a874-1051dabb0e3e">0</attribute>
+                  </attributes>
+                </data>
+              </addData>
+            </transition>
+            <selectionConvergence localId="15">
+              <position x="0" y="0" />
+              <connectionPointIn>
+                <connection refLocalId="9" formalParameter="sfc" />
+              </connectionPointIn>
+              <connectionPointIn>
+                <connection refLocalId="14" formalParameter="sfc" />
+              </connectionPointIn>
+              <connectionPointOut />
+            </selectionConvergence>
+            <jumpStep localId="16" targetName="Init">
+              <position x="0" y="0" />
+              <connectionPointIn>
+                <connection refLocalId="15" />
+              </connectionPointIn>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/sfc/element" handleUnknown="implementation">
+                  <attributes xmlns="">
+                    <attribute guid="38391c6d-6d4a-42f8-8ee7-9f45e5adafa8">Init</attribute>
+                    <attribute guid="01580b27-6378-448b-8ecb-0e4b795b58d6">FALSE</attribute>
+                  </attributes>
+                </data>
+              </addData>
+            </jumpStep>
+          </SFC>
+        </body>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/sfcsettings" handleUnknown="implementation">
+            <SFCSettings>
+              <LibTitle>IecSfc</LibTitle>
+              <LibCompany>System</LibCompany>
+              <LibVersion>4.4.0.0</LibVersion>
+              <LibNamespace>IecSfc</LibNamespace>
+              <CalcActiveTransOnly>false</CalcActiveTransOnly>
+              <UseDefaults>false</UseDefaults>
+              <Flags>
+                <EnableLimit Declare="true" Use="false" />
+                <Init Declare="true" Use="false" />
+                <Reset Declare="true" Use="false" />
+                <QuitError Declare="true" Use="false" />
+                <Pause Declare="true" Use="false" />
+                <Error Declare="true" Use="false" />
+                <Trans Declare="true" Use="false" />
+                <ErrorStep Declare="true" Use="false" />
+                <ErrorPOU Declare="true" Use="false" />
+                <CurrentStep Declare="true" Use="false" />
+                <Tip Declare="true" Use="false" />
+                <TipMode Declare="true" Use="false" />
+                <MaxFlags Declare="true" Use="false" />
+                <SFCErrorAnalyzation Declare="true" Use="false" />
+                <SFCErrorAnalyzationTable Declare="true" Use="false" />
+                <CurrentSteps Declare="true" Use="false" />
+                <MetaSteps Declare="true" Use="false" />
+              </Flags>
+            </SFCSettings>
+          </data>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>1fa2d1ca-2a53-4e82-b216-386dac7f07a6</ObjectId>
+          </data>
+        </addData>
+      </pou>
+    </pous>
+  </types>
+  <instances>
+    <configurations />
+  </instances>
+  <addData>
+    <data name="http://www.3s-software.com/plcopenxml/projectstructure" handleUnknown="discard">
+      <ProjectStructure>
+        <Object Name="PLC_PRG" ObjectId="1fa2d1ca-2a53-4e82-b216-386dac7f07a6">
+          <Object Name="Alimentar_entry" ObjectId="9736dfde-6426-49a0-99cc-2f97b17aca29" />
+          <Object Name="Alimentar_exit" ObjectId="4cfaff57-5fe0-4db6-956a-79588b3823b7" />
+          <Object Name="Paletizar_entry" ObjectId="5aefb77d-b9aa-4b7d-ad1c-e5e414785ed0" />
+          <Object Name="Paletizar_exit" ObjectId="4191171d-936e-46cc-baa7-4efc017a350d" />
+          <Object Name="Rechazar_entry" ObjectId="951ef142-dd62-4272-9157-ce88ee04d60c" />
+          <Object Name="Rechazar_exit" ObjectId="24af3387-f9f7-408b-ba59-20db7b833434" />
+        </Object>
+      </ProjectStructure>
+    </data>
+  </addData>
+</project>
